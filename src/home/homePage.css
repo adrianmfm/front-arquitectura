@@ -1,0 +1,11 @@
+.home-page {
+    background-size: 90%;
+    background-position: center;
+    height: 90vh; /* Ajusta la altura según sea necesario */
+    color: #000000;
+    background-repeat: no-repeat; /* Asegúrate de que el texto sea legible sobre el fondo */
+  }
+  .navbar-nav .nav-link {
+    color: #ff5722; /* Cambia el color según lo que desees */
+  }
+

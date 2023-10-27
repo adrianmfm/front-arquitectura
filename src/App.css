@@ -36,3 +36,26 @@
     transform: rotate(360deg);
   }
 }
+.container img {
+  transition: opacity .35s ease;
+}
+
+.container:hover img {
+  opacity: 1;
+}
+
+figcaption {
+  opacity: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  transition: opacity .3s ease;
+}
+
+.container:hover figcaption {
+  opacity: 1;
+}
+.card-container {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px auto;
+  max-width: 1200px;
+}
