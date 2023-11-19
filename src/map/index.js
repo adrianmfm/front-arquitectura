@@ -1,5 +1,6 @@
 import React from "react";
 import Map from "./Map";
+import RentForm from "./RentForm";
 const Arriendo = () => {
   return (
     <div>
@@ -7,6 +8,7 @@ const Arriendo = () => {
         <span className="text-primary">Estacionamientos disponibles</span>
       </h1>
       <Map />
+      <RentForm/>
     </div>
   );
 };
