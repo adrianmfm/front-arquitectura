@@ -7,7 +7,8 @@ import Footer from './footer/Footer';
 import Profile from './profile/Profile';
 import Arriendo from './map';
 import Navbar from './home/Navbar';
-import Informacion from './reservas/Informacion';
+import Informacion from './booking/Info'
+import RentForm from './map/RentForm';
 function App() {
   return (
     <div className="App">

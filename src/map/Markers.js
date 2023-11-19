@@ -7,7 +7,7 @@ import {
 } from "../services/api";
 import { Icon } from "leaflet";
 import { Link } from "react-router-dom";
-
+import { RentForm } from "./RentForm";
 const Markers = () => {
   const [estacionamientos, setEstacionamientos] = useState([]);
   const [totalPlazasDisponibles, setTotalPlazasDisponibles] = useState(null);
@@ -16,7 +16,8 @@ const Markers = () => {
   const handleArrendarClick = (idPlaza) => {
     arrendarPlaza(idPlaza, 1);
     //cambiar 1 por variable idpersona cuando este logueado
-    window.location.reload();
+    //window.location.reload();
+
   };
 
   useEffect(() => {
@@ -42,8 +43,11 @@ const Markers = () => {
         setEstacionamientos(datos.estacionamientos);
       } catch (error) {
         console.error("Error al obtener estacionamientos:", error);
+        
       }
+      
     };
+    
 
     obtenerEstacionamientos();
   }, []);
@@ -55,7 +59,7 @@ const Markers = () => {
   return (
     <>
       {showModal && (
-        <div
+        <div 
           style={{
             position: "fixed",
             top: "50%",
@@ -94,7 +98,7 @@ const Markers = () => {
 
       {estacionamientos.map(
         (estacionamiento) =>
-          estacionamiento.disponible && (
+          estacionamiento.habilitado && (
             <Marker
               key={estacionamiento.idEstacionamiento}
               position={{
@@ -114,7 +118,7 @@ const Markers = () => {
                   <p>Tarifa: {estacionamiento.tarifa}</p>
                   <p>{estacionamiento.descripcion}</p>
                   <p>
-                    {estacionamiento.disponible ? "Disponible" : "Arrendado"}
+                    {estacionamiento.habilitado ? "Disponible" : "Arrendado"}
                   </p>
                   <button
                     type="button"

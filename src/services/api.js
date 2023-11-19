@@ -56,8 +56,8 @@ export const obtenerTotalPlazasDisponibles = async () => {
   try {
     const response = await fetch(`${apiUrl}/contar-plazas`);
     const data = await response.json();
-    console.log('Valor de total:', data.arriendos); // Agregado este console.log
-    return data.arriendos;
+    console.log('Valor de total:', data.cantidadPlazas); // Agregado este console.log
+    return data.cantidadPlazas;
   } catch (error) {
     console.error('Error al obtener el total de plazas disponibles:', error);
     throw error;
