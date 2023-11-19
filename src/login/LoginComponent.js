@@ -1,5 +1,6 @@
-import React from "react";
+import React,{useState} from "react";
 import { useNavigate } from "react-router-dom";
+import { login } from "../services/api";
 import {
   MDBContainer,
   MDBRow,
@@ -8,12 +9,37 @@ import {
   MDBCardBody,
   MDBInput,
 } from "mdb-react-ui-kit";
+import Swal from 'sweetalert2'
 
-function LoginComponent() {
+const initialLoginFormData = {
+  email: "",
+  password: "",
+}
+
+function LoginComponent({handleLogin}) {
+  const [loginFormData, setLoginForm] = useState(initialLoginFormData);
+  const {email, password} = loginFormData;
+  const onInputChange = ({target}) => {
+    const {name, value} = target;
+    setLoginForm({...loginFormData, [name]: value,});
+
+  }
+
   const navigate = useNavigate();
-  const handleClick = () => {
-    navigate("/home");
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    if  (!email || !password) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Faltan campos por llenar',
+      });
+    }
+    handleLogin({email, password});
+    setLoginForm(initialLoginFormData);
   };
+
   return (
     <MDBContainer fluid className="p-4">
       <MDBRow>
@@ -34,36 +60,44 @@ function LoginComponent() {
             <img src="/media/logo.avif" alt="LOGO" style={{ width: "300px" }} />
           </div>
         </MDBCol>
-
-        <MDBCol md="6">
-          <MDBCard className="my-5">
-            <h1 className="my-5 display-6 fw-bold ls-tight">
-              Bienvenido <br />
-            </h1>
-            <MDBCardBody className="p-5">
-              <MDBInput
-                wrapperClass="mb-4"
-                label="Email"
-                id="form1"
-                type="email"
-              />
-              <MDBInput
-                wrapperClass="mb-4"
-                label="Contraseña"
-                id="form1"
-                type="password"
-              />
-
-              <button
-                onClick={handleClick}
-                className="w-100 mb-4 btn btn-primary"
-                size="md"
-              >
-                Iniciar sesión
-              </button>
-            </MDBCardBody>
-          </MDBCard>
-        </MDBCol>
+          <MDBCol md="6">
+          <form onSubmit={onSubmit}>
+            <MDBCard className="my-5">
+              <h1 className="my-5 display-6 fw-bold ls-tight">
+                Bienvenido <br />
+              </h1>
+              <MDBCardBody className="p-5">
+                <MDBInput
+                  wrapperClass="mb-4"
+                  label="Email"
+                  id="formEmail"
+                  type="email"
+                  name="email"
+                  value={email}
+                  onChange={onInputChange}
+                />
+                <MDBInput
+                  wrapperClass="mb-4"
+                  label="Contraseña"
+                  id="formPassword"
+                  type="password"
+                  name="password"
+                  value={password}
+                  onChange={onInputChange}
+                />
+                <button
+                  className="w-100 mb-4 btn btn-primary"
+                  size="md"
+                  type="submit"
+                >
+                  Iniciar sesión
+                </button>
+                
+              </MDBCardBody>
+            </MDBCard>
+            </form>
+          </MDBCol>
+      
       </MDBRow>
     </MDBContainer>
   );

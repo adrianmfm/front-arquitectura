@@ -1,13 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function Navbar() {
+function Navbar({handleLogout}) {
   const navigate = useNavigate();
-
-  const handleLogout = () => {
-    navigate('/login')
-  };
-
+  const login = JSON.parse(sessionStorage.getItem('login'));
   const goToReservas = () => {
     navigate('/mis-reservas');
   };
@@ -15,6 +11,9 @@ function Navbar() {
   const goToPerfil = () => {
     navigate('/perfil');
   };
+  const goToMyParking = () => {
+    navigate('/parking');
+  }
 
   return (
     <nav
@@ -40,6 +39,14 @@ function Navbar() {
         >
           <img src='/media/calendar.svg' alt="reservas" width="25" height="25" />
         </button>
+        {(login.isDueno) ? <button 
+          className="btn btn-link"
+          title="Mis estacionamientos"
+          onClick={goToMyParking}
+        >
+          <img src='/media/parking-house.svg' alt="estacionamientos" width="25" height="25" />
+
+        </button>: null}
         <button
           className="btn btn-link"
           onClick={handleLogout}

@@ -1,4 +1,11 @@
-const apiUrl = 'http://localhost:3000'; 
+const apiUrl = 'http://localhost:8080'; 
+
+const config = {
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': sessionStorage.getItem('token'),
+}
+}
 
 export const obtenerDatosPersonales = async (id) => {
   try {
@@ -13,7 +20,7 @@ export const obtenerDatosPersonales = async (id) => {
 
 export const obtenerLatitudLongitudDesdeAPI = async () => {
   try {
-    const response = await fetch(`${apiUrl}/estacionamientos`);
+    const response = await fetch(`${apiUrl}/estacionamientos`, config);
     const datos = await response.json();
     return datos;
   } catch (error) {
@@ -23,7 +30,7 @@ export const obtenerLatitudLongitudDesdeAPI = async () => {
 };
 export const obtenerDisponibilidadPlaza = async (idPlaza) => {
   try {
-    const response = await fetch(`${apiUrl}/plaza/${idPlaza}/disponible`);
+    const response = await fetch(`${apiUrl}/plaza/${idPlaza}/disponible`, config);
     const data = await response.json();
     return data.disponible;
   } catch (error) {
@@ -36,9 +43,7 @@ export const arrendarPlaza = async (idPlaza, idPersona) => {
   try {
     const response = await fetch(`${apiUrl}/plaza/${idPlaza}/arrendar/${idPersona}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      config,
       body: JSON.stringify({ disponible: 0 }),
     });
 
@@ -54,9 +59,8 @@ export const arrendarPlaza = async (idPlaza, idPersona) => {
 
 export const obtenerTotalPlazasDisponibles = async () => {
   try {
-    const response = await fetch(`${apiUrl}/contar-plazas`);
+    const response = await fetch(`${apiUrl}/contar-plazas`,config);
     const data = await response.json();
-    console.log('Valor de total:', data.cantidadPlazas); // Agregado este console.log
     return data.cantidadPlazas;
   } catch (error) {
     console.error('Error al obtener el total de plazas disponibles:', error);
@@ -67,7 +71,7 @@ export const obtenerTotalPlazasDisponibles = async () => {
 
 export const obtenerInfoEstacionamiento = async (idPersona) => {
   try {
-    const response = await fetch(`${apiUrl}/info-estacionamientos/${idPersona}`);
+    const response = await fetch(`${apiUrl}/info-estacionamientos/${idPersona}`,config);
     const datos = await response.json();
     return datos;
   } catch (error) {
@@ -80,9 +84,7 @@ export const liberarPlaza = async (idPlaza) => {
   try {
     const response = await fetch(`${apiUrl}/liberar-plaza/${idPlaza}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      config,
     });
 
     if (response.ok) {
@@ -93,6 +95,28 @@ export const liberarPlaza = async (idPlaza) => {
     }
   } catch (error) {
     console.error('Error al liberar la plaza:', error);
+    throw error;
+  }
+};
+
+export const login = async (email, password) => {
+  try {
+    const response = await fetch("http://localhost:8080/login", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    } else {
+      throw new Error('Error al iniciar sesión');
+    }
+  } catch (error) {
+    console.error('Error al iniciar sesión:', error);
     throw error;
   }
 };

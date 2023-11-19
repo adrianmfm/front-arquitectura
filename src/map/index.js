@@ -8,7 +8,7 @@ const Arriendo = () => {
         <span className="text-primary">Estacionamientos disponibles</span>
       </h1>
       <Map />
-      <RentForm/>
+      
     </div>
   );
 };
