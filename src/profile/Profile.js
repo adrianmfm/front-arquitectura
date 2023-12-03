@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { MDBCol, MDBContainer, MDBRow, MDBCard, MDBCardText, MDBCardBody, MDBCardImage, MDBTypography, MDBIcon } from 'mdb-react-ui-kit';
-import { obtenerDatosPersonales } from '../services/api';
+import { getPersonaByEmail } from '../services/api';
 
 export default function Profile() {
   const [datosPersonales, setDatosPersonales] = useState(null);
 
+
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const idUsuario = 1;
-        const datos = await obtenerDatosPersonales(idUsuario);
+        const login = JSON.parse(sessionStorage.getItem('login'));
+        
+        const datos = await getPersonaByEmail(login.user.email);
         setDatosPersonales(datos);
+        console.log(login.user.id)
       } catch (error) {
         console.error('Error al cargar los datos personales:', error);
       }

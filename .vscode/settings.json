@@ -1,0 +1,11 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "arquitectura",
+            "database": "/Users/adrianfloresmatute/Desktop/Workspace/arquitectura/base-de-datos/arquitectura.db"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}

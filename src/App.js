@@ -12,10 +12,12 @@ import Informacion from './booking/Info'
 import { loginUser } from './login/services/authServices';
 import { Parking } from './parking/Parking';
 import Swal from 'sweetalert2';
-
+import { getPersonaByEmail } from "./services/api";
+import ExitoPago from './booking/ExitoPago';
+import ErrorPago from './booking/ErrorPago';
 const initialLogin = JSON.parse(sessionStorage.getItem('login'))  || {
   isAuth: false,
-  isDyeno: false,
+  isDueno: false,
   email: undefined,
 }
 
@@ -24,24 +26,44 @@ function App() {
 
   const [login, dispatch] = useReducer(loginReducer, initialLogin);
   const handleLogin = async ({email,password}) =>{
-    
-    try {
+  try {
       const response = await loginUser({email,password});
       const token = response.data.token;
+      sessionStorage.setItem('token', `Bearer ${token}`);
+
       const claims = JSON.parse(window.atob(token.split('.')[1]));
-      const user = {email: response.data.email}
+      // Verificar el rol y establecer la redirección
+      let redirectPath = '/';
+      const authorities = JSON.parse(claims.authorities);
+      
+      // ir a buscar el id de la persona por email
+      console.log(token, sessionStorage.getItem('token'));
+      const { idPersona } = await getPersonaByEmail(email)
+      const user = {email, id: idPersona}
+       if (user.email === 'ad.flores@duocuc.cl') {
+         // Si el usuario es dueño, redirigir a una ruta para dueños
+         console.log('parking', user.email)
+         redirectPath = '/parking';
+       } else {
+         // Si el usuario es un usuario normal, redirigir a una ruta para usuarios
+         console.log('home')
+         redirectPath = '/';
+       }
+   
+       // Guardar en sessionStorage
+       sessionStorage.setItem('login', JSON.stringify({
+         isAuth: true,
+         isDueno: authorities.some(auth => auth.authority === 'ROLE_DUENO'),
+         user
+       }));
       dispatch({
         type: 'login',
         payload: {user,
           isDueno: JSON.parse(claims.authorities).some(auth => auth.authority === 'ROLE_DUENO')
         }
       });
-      sessionStorage.setItem('login',JSON.stringify(
-        {isAuth: true,
-        isDueno: JSON.parse(claims.authorities).some(auth => auth.authority === 'ROLE_DUENO'),
-        user,}
-      ));
-      sessionStorage.setItem('token',`Bearer ${token}`);
+      return <Navigate to={redirectPath} />;
+  
       
     }catch (error) {
         if (error.response?.status === 401) {
@@ -118,13 +140,33 @@ function App() {
             <Parking/>
             <Footer/>
           </>): <LoginComponent handleLogin={handleLogin} />}/>
+          <Route
+            path='/pago/exito'
+            element={login.isAuth ?(
+              <>
+                <Navbar handleLogout={handleLogout}/>
+                <ExitoPago/>
+                <Footer />
+              </>) : <LoginComponent handleLogin={handleLogin} />}
+            
+          />
+           <Route
+            path='/pago/fallido'
+            element={login.isAuth ?(
+              <>
+                <Navbar handleLogout={handleLogout}/>
+                <ErrorPago/>
+                <Footer />
+              </>) : <LoginComponent handleLogin={handleLogin} />}
+            
+          />
           
-          <Route path='/mis-reservas' element={
+          <Route path='/mis-reservas' element={login.isAuth ?(
           <>
             <Navbar handleLogout={handleLogout}/>
             <Informacion/>
             <Footer/>
-          </>}/>
+          </>): <LoginComponent handleLogin={handleLogin} />} />
           
 
         </Routes>

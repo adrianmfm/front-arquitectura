@@ -1,15 +1,15 @@
 const apiUrl = 'http://localhost:8080'; 
 
-const config = {
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': sessionStorage.getItem('token'),
-}
-}
+const config = () => ({
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': sessionStorage.getItem('token'),
+  }
+})
 
 export const obtenerDatosPersonales = async (id) => {
   try {
-    const response = await fetch(`${apiUrl}/datos-personales/${id}`);
+    const response = await fetch(`${apiUrl}/persona/info`);
     const datos = await response.json();
     return datos.datosPersonales;
   } catch (error) {
@@ -18,9 +18,9 @@ export const obtenerDatosPersonales = async (id) => {
   }
 };
 
-export const obtenerLatitudLongitudDesdeAPI = async () => {
+export const obtenerLatitudLongitudDesdeAPI = async (idPersona) => {
   try {
-    const response = await fetch(`${apiUrl}/estacionamientos`, config);
+    const response = await fetch(`${apiUrl}/estacionamientos`, {...config(), method: 'POST', body: JSON.stringify({  idPersona }),});
     const datos = await response.json();
     return datos;
   } catch (error) {
@@ -30,7 +30,7 @@ export const obtenerLatitudLongitudDesdeAPI = async () => {
 };
 export const obtenerDisponibilidadPlaza = async (idPlaza) => {
   try {
-    const response = await fetch(`${apiUrl}/plaza/${idPlaza}/disponible`, config);
+    const response = await fetch(`${apiUrl}/plaza/${idPlaza}/disponible`, config());
     const data = await response.json();
     return data.disponible;
   } catch (error) {
@@ -39,12 +39,12 @@ export const obtenerDisponibilidadPlaza = async (idPlaza) => {
   }
 };
 
-export const arrendarPlaza = async (idPlaza, idPersona) => {
+export const arrendarPlaza = async (idPlaza, idPersona, fechaHoraLlegada) => {
   try {
-    const response = await fetch(`${apiUrl}/plaza/${idPlaza}/arrendar/${idPersona}`, {
+    const response = await fetch(`${apiUrl}/arrendar`, {
+      ...config(),
       method: 'POST',
-      config,
-      body: JSON.stringify({ disponible: 0 }),
+      body: JSON.stringify({ idPlaza, idPersona, fechaHoraLlegada}),
     });
 
     if (response.ok) {
@@ -57,9 +57,13 @@ export const arrendarPlaza = async (idPlaza, idPersona) => {
   }
 };
 
-export const obtenerTotalPlazasDisponibles = async () => {
+export const obtenerTotalPlazasDisponibles = async (idPersona) => {
   try {
-    const response = await fetch(`${apiUrl}/contar-plazas`,config);
+    const response = await fetch(`${apiUrl}/contar-plazas`,{
+    ...config(),
+    method: 'POST',
+    body: JSON.stringify({  idPersona }),
+  })
     const data = await response.json();
     return data.cantidadPlazas;
   } catch (error) {
@@ -71,20 +75,73 @@ export const obtenerTotalPlazasDisponibles = async () => {
 
 export const obtenerInfoEstacionamiento = async (idPersona) => {
   try {
-    const response = await fetch(`${apiUrl}/info-estacionamientos/${idPersona}`,config);
+    const response = await fetch(`${apiUrl}/info/estacionamientos`, {
+      ...config(),
+      method: 'POST',
+      body: JSON.stringify({ idPersona }),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Error al obtener la información del estacionamiento');
+    }
+
     const datos = await response.json();
-    return datos;
+    console.log('datos', datos)
+    return datos.infoEstacionamiento;
   } catch (error) {
     console.error('Error al obtener la información del estacionamiento:', error);
     throw error;
   }
 };
 
-export const liberarPlaza = async (idPlaza) => {
+
+export const setFinalTime = async (idArriendo, horaSalida) => {
   try {
-    const response = await fetch(`${apiUrl}/liberar-plaza/${idPlaza}`, {
+    const response = await fetch(`${apiUrl}/finalizar/arriendo`, {
+      ...config(),
       method: 'POST',
-      config,
+      body: JSON.stringify({ idArriendo, horaSalida}),
+    });
+    console.log('aqui', response)
+    if (!response.ok) {
+      return false
+    }
+
+    else return true 
+  } catch (error) {
+    console.error('Error al obtener la información del estacionamiento:', error);
+    throw error;
+  }
+};
+
+
+export const liberarPlaza = async (idPlaza, monto) => {
+  try {
+    const response = await fetch(`${apiUrl}/liberar/plaza`, {
+      ...config(),
+      method: 'POST',
+      body: JSON.stringify({ idPlaza, monto }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    } else {
+      throw new Error('Error al liberar la plaza');
+    }
+  } catch (error) {
+    console.error('Error al liberar la plaza:', error);
+    throw error;
+  }
+};
+
+
+export const pagarArriendo = async (idPlaza, monto, idArriendo, horaSalida) => {
+  try {
+    const response = await fetch(`${apiUrl}/arriendo/pagar`, {
+      ...config(),
+      method: 'POST',
+      body: JSON.stringify({ idPlaza, monto, idArriendo, horaSalida }),
     });
 
     if (response.ok) {
@@ -118,5 +175,24 @@ export const login = async (email, password) => {
   } catch (error) {
     console.error('Error al iniciar sesión:', error);
     throw error;
+  }
+};
+
+export const getPersonaByEmail = async (email) => {
+  try {
+    const response = await fetch(`${apiUrl}/persona/info`, {
+      ...config(),
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data.datosPersonales;
+    } else {
+      console.error('Error al obtener el id de usuario por email');
+    }
+  } catch (error) {
+    console.error('Error al obtener el id de usuario por email:', error);
   }
 };

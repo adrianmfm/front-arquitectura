@@ -37,6 +37,7 @@ function LoginComponent({handleLogin}) {
       });
     }
     handleLogin({email, password});
+    console.log(sessionStorage.getItem('login'))
     setLoginForm(initialLoginFormData);
   };
 
