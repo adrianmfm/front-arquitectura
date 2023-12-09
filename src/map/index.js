@@ -1,6 +1,6 @@
 import React from "react";
 import Map from "./Map";
-import RentForm from "./RentForm";
+
 const Arriendo = () => {
   return (
     <div>

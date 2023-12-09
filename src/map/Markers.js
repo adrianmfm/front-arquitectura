@@ -35,8 +35,6 @@ const Markers = () => {
       arrendarPlaza(idPlaza, login.user.id, selectedDateUtc);
       window.location.reload();
     } else {
-      // Handle caso donde no se ha seleccionado ninguna fecha
-      // Puedes mostrar un mensaje o realizar alguna acción
       console.error('No se ha seleccionado ninguna fecha');
     }
   };
@@ -63,6 +61,9 @@ const Markers = () => {
 
     obtenerTotalPlazas();
   }, []);
+  const closeDatePickerModal = () => {
+    setDatePickerModal(false);
+  };
 
   useEffect(() => {
     const obtenerEstacionamientos = async () => {
@@ -93,6 +94,7 @@ const Markers = () => {
             zIndex: "1000",
             fontSize: "1.2em",
             textAlign: "center",
+            
           }}
         >
           {totalPlazasDisponibles !== null ? (
@@ -135,7 +137,7 @@ const Markers = () => {
                 })
               }
             >
-              <Popup>
+              <Popup >
                 <div className="text-center">
                   <h6>{estacionamiento.direccion}</h6>
                   <p>Tarifa: {estacionamiento.tarifa}</p>
@@ -167,11 +169,26 @@ const Markers = () => {
               background: "white",
               padding: "20px",
               borderRadius: "8px",
+              width: "400px", // Fixed width
+              height: "190px", // Fixed height
               zIndex: "1000",
               fontSize: "1.2em",
               textAlign: "center",
             }}
           >
+            <button className="btn btn-link" onClick={closeDatePickerModal} style={{
+              position: "absolute",
+              top: "0",
+              right: "0",
+            }}>
+              <img
+              src="/media/icon-x.svg"
+              alt="salir"
+              width="10"
+              height="10"
+            ></img>
+            </button>
+
             <div className="modal-content">
               <h6>{selectedEstacionamiento.direccion}</h6>
               <p>Seleccione la fecha y hora de entrada</p>
@@ -192,6 +209,7 @@ const Markers = () => {
               <button className="btn btn-link" onClick={() => handleArrendarClick(selectedEstacionamiento.idPlaza)}>
                 Aceptar
               </button>
+              
             </div>
           </div>
         </div>
